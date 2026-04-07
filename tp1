@@ -1,0 +1,134 @@
+1 - Evaluación de protocolos de una clase
+
+Sea la clase Rectángulo con 4 variables de instancia (esquinaSuperiorIzquierda,
+esquinaSuperiorDerecha, esquinaInferiorIzquierda y esquinaInferiorDerecha). Elija uno de los
+protocolos presentados a continuación y justifique su elección. Recuerde que el protocolo es el conjunto
+de mensajes que entiende una clase o tipo.
+
+< Wollok />
+Opción 1)
+rectangulo = new Rectangulo()
+rectangulo.esquinaSuperiorIzquierda(unPunto)
+rectangulo.esquinaSuperiorDerecha(unPunto)
+rectangulo.esquinaInferiorIzquierda(unPunto)
+rectangulo.esquinaInferiorDerecha(unPunto)
+
+Opción 2)
+rectangulo = new Rectangulo(esquinaSuperiorIzquierda=unPunto, altura=unaAltura, ancho=unAncho)
+rectangulo.reubicarEsquinaSuperiorIzquierdaEn(unPunto)
+rectangulo.ancho(unAncho)
+rectangulo.alto(unaAltura)
+
+Elijo la opcion 2 porque me permite "personalizar" mi rectangulo dandole las medidas que yo quiero, en cambio con la opcion uno 
+obtengo un rectangulo con las siempre las mismas medidas
+
+2 - DELEGACION 
+
+En una oficina hay un jefe que tiene un secretario el cual administra un fichero. Dadas las siguientes
+implementaciones seleccione la mejor alternativa y justifique.
+
+Opción 1)
+class Jefe {
+method trabajarConFicha(unaFicha) {
+self.secretario().fichero().buscar(unaFicha)
+           }
+}
+
+Opción 2)
+class Jefe {
+method trabajarConFicha(unaFicha) {
+self.secretario().buscarEnFichero(unaFicha)
+           }
+}
+class Secretario {
+method buscarEnFichero(unaFicha) {
+self.fichero().buscar(unaFicha)
+            }
+}
+
+Elijo la segunda opcion nuevamente, porque en la primera opcion no tenemos manera de saber la estructura interna del secretario
+La opción 2 es mejor porque respeta el encapsulamiento y delega la responsabilidad en el Secretario en lugar de exponer su estructura interna.
+
+3 - Polimorfismo
+
+Existen cuentas bancarias que pueden ser de tipo CajaDeAhorro y CuentaCorriente. Indique los
+defectos de cada una de las opciones.
+
+Opción 1)
+
+class CuentaBancaria {
+
+     method extraer(unMonto) {
+     var rojo = 0
+     if (self.class() == CuentaCorriente) 
+         rojo = self.rojoPermitido()
+     if ((self.getSaldo() + rojo) >= unMonto) 
+        self.setSaldo(self.getSaldo() - unMonto) 
+    }
+}
+
+Rompe el polimorfismo ´reguntando por la clase y no hace uso de herencia. 
+
+Opción 2)
+
+class CuentaBancaria {
+
+     method extraer(unMonto) {
+     var rojo = 0
+     if (self.getTipo() == ‘cuentacorriente’) 
+         rojo = self.rojoPermitido()
+     if ((self.getSaldo() + rojo) >= unMonto) 
+        self.setSaldo(self.getSaldo() - unMonto) 
+    }
+}
+
+Lo mismo que la anterior solo que en vez de usar set.class(), pregunta por el tipo con string, pero tiene el mismo problema.
+
+Opción 3)
+
+class CuentaBancaria {
+
+    method extraer(unMonto)
+
+}
+
+class CajaDeAhorro inherits CuentaBancaria {
+
+    override method extraer(unMonto) {
+        if (self.getSaldo() >= unMonto) 
+            self.setSaldo(self.getSaldo() - unMonto)
+    }
+}
+
+class CuentaCorriente inherits CuentaBancaria {
+
+    override method extraer(unMonto) {
+        if ((self.getSaldo() + self.rojoPermitido()) >= unMonto)
+    self.setSaldo(self.getSaldo() - unMonto)
+    }
+}
+
+Hay dos metodos que son muy parecidos y se podrian abstraer. Duplicacion de codigo. 
+
+Opción 4)
+
+class CuentaBancaria {
+
+    method extraer(unMonto) {
+        if(self.chequearSaldoParaExtraccion(unMonto)) 
+            self.setSaldo(self.getSaldo() - unMonto)
+    }
+}
+
+class CajaDeAhorro inherits CuentaBancaria {
+
+    override method chequearSaldoParaExtraccion(unMonto) = self.getSaldo() >= unMonto
+}
+
+class CuentaCorriente inherits CuentaBancaria {
+    
+    override method chequearSaldoParaExtraccion(unMonto) = (self.getSaldo() + self.rojoPermitido()) >= unMonto
+}
+
+Tampoco veo donde esta el problema en esta opcion, si bien la anterior no aprovecha el polimorfismo como en esta opcion, ambas las veo correcta, aunque eligiria esta opcion
+ya que usa muy bien el polimorfismo para chequear en cada clase si puede extraer el monto. 
