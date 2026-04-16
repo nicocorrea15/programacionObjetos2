@@ -129,3 +129,5 @@ class EmpleadoContratado inherits Empleado {
     override method retenciones() = 50
 
 }
+
+// UML https://miro.com/app/board/uXjVGj3gCRQ=/
